@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+
+import { supabase } from "./utils/supabaseClient";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   
@@ -8,6 +10,18 @@ export default function Home() {
     bottoms: [],
     shoes: [],
   });
+
+  useEffect(() => {
+    async function checkConnection() {
+      const { data, error } = await supabase.from('test').select('*');
+      if (error) {
+        console.log("Connected to Supabase, but table missing (Expected!)");
+      } else {
+        console.log("Supabase connected successfully!");
+      }
+    }
+    checkConnection();
+  }, []);
 
   function handleUpload(e: any, category: string) {
     const files = Array.from(e.target.files);

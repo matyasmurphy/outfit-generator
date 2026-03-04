@@ -23,17 +23,56 @@ export default function Home() {
     checkConnection();
   }, []);
 
-  function handleUpload(e: any, category: string) {
-    const files = Array.from(e.target.files);
-    const newImageUrls = files.map((file: any) => URL.createObjectURL(file));
+  async function handleUpload(e: any, category: string) {
+    const files = Array.from(e.target.files) as File[];
 
-    setWardrobe((prevWardrobe) => {
-      return {
-        ...prevWardrobe,
-        [category]: [...prevWardrobe[category], ...newImageUrls],
-      };
-    });
+    for (const file of files) {
+      const fileName = `${category}/${Date.now()}-${file.name}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('wardrobe')
+        .upload(fileName, file);
+
+      if (error) { console.error(error); continue; }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('wardrobe')
+        .getPublicUrl(fileName);
+
+      // Save to DB
+      await supabase.from('wardrobe_items').insert({
+        category,
+        image_url: publicUrl
+      });
+
+      // Update local state
+      setWardrobe(prev => ({
+        ...prev,
+        [category]: [...prev[category], publicUrl]
+      }));
+    }
   }
+
+  useEffect(() => {
+    async function loadWardrobe() {
+      const { data, error } = await supabase
+        .from('wardrobe_items')
+        .select('*');
+
+      if (error) { console.error(error); return; }
+
+      const grouped: { [key: string]: string[] } = { tops: [], bottoms: [], shoes: [] };
+      data.forEach(item => {
+        if (grouped[item.category]) {
+          grouped[item.category].push(item.image_url);
+        }
+      });
+      setWardrobe(grouped);
+    }
+    loadWardrobe();
+  }, []);
 
   const [selectedOutfit, setSelectedOutfit] = useState({
     top: "null",

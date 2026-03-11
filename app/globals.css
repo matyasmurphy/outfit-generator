@@ -1,103 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-    background-color: #8cc4ff;
-    margin: 0;
-    padding: 10px;
-    box-sizing: border-box;
+  background-color: #8cc4ff;
+  margin: 0;
+  padding: 10px;
+  font-family: 'DM Sans', sans-serif;
 }
 
+/* ── TOP BAR ── */
+#topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#topbar h1 {
+  font-family: 'DM Serif Display', serif;
+  margin: 0;
+  font-size: 1.6rem;
+  color: #1a1a2e;
+  letter-spacing: 2px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #1a1a2e;
+}
+
+.logout-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid #1a1a2e;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #1a1a2e;
+  color: white;
+}
+
+/* ── LAYOUT ── */
 #layout {
-    display: flex;
-    gap: 2%;
-    height: 80vh;
+  display: flex;
+  gap: 2%;
+  height: 80vh;
 }
 
+/* ── OUTFIT DISPLAY ── */
 #OutfitDisplay {
-    flex: 1;
-    height: 80vh;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    background-color: white;
-    border-radius: 15px;
+  flex: 1;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  border-radius: 15px;
 }
 
 #OutfitDisplay button {
-    width: 90%;
-    height:5vh;
-    margin-top: 10px;
-    border-radius: 15px;
-    
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    text-align: center;
-    border: none;
+  width: 90%;
+  height: 5vh;
+  margin-top: 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+#OutfitDisplay button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+#OutfitDisplay button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+  font-size: 0.75rem;
 }
 
 #clothesDisplay {
-    background-color: rgb(234, 234, 234);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    padding-top: 20px ;
-    margin-top: 20px;
-    border-radius: 15px;
-    width: 90%;
+  background-color: rgb(234, 234, 234);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-radius: 15px;
+  width: 90%;
+  gap: 10px;
+  padding-bottom: 20px;
 }
 
 #OutfitDisplay img {
-    width: 150px;
-    height: 150px;
-    gap: 10px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
+.placeholder {
+  width: 150px;
+  height: 150px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+/* ── WARDROBE ── */
 #Wardrobe {
-    width: 30%;
-    height: 80vh;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    display: flex;
-    flex-direction: column;
-
-    background-color: white;
-    border-radius: 15px;
+  width: 30%;
+  height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 15px;
 }
 
 #UploadClothes {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 0 8px;
+  width: 100%;
+}
+
+.uploadButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.uploadButtons h3 {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #555;
+  font-weight: 600;
 }
 
 .uploadButtons input[type="file"] {
-    display: none;
+  display: none;
 }
 
 .custom-file-upload {
-    display: flex;
-
-    padding: 10px 20px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    text-align: center;
-    width: 70px;
-    font-size: 14px;
+  display: flex;
+  padding: 8px 14px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .custom-file-upload:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 .clothesPreview {
-    text-align: center;
+  text-align: center;
+  padding: 0 10px 10px;
 }
 
+.clothesPreview h3 {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.category-section {
+  margin-bottom: 10px;
+}
+
+.category-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 4px 0;
+}
+
+.category-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.empty-wardrobe {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-top: 20px;
+}
+
+/* ── AUTH SCREEN ── */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #8cc4ff;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.auth-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  margin: 0 0 6px;
+  letter-spacing: 3px;
+  color: #1a1a2e;
+}
+
+.auth-subtitle {
+  color: #888;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.auth-tabs {
+  display: flex;
+  background: #f0f0f0;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s;
+}
+
+.auth-tab.active {
+  background: white;
+  color: #1a1a2e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.auth-field input {
+  padding: 11px 14px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.auth-field input:focus {
+  border-color: #007bff;
+}
+
+.auth-error {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin: 0;
+  text-align: center;
+}
+
+.auth-message {
+  color: #38a169;
+  font-size: 0.85rem;
+  margin: 0;
+  text-align: center;
+}
+
+.auth-submit {
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.auth-submit:disabled {
+  background: #bbb;
+  cursor: not-allowed;
+}

@@ -16,13 +16,22 @@ export default function Auth() {
     setError(null);
     setMessage(null);
 
-    if (mode === "register") {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) setError(error.message);
-      else setMessage("Account created! Check your email to confirm, then log in.");
+  if (mode === "register") {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) setError(error.message);
+    else setMessage("Account created! Check your email to confirm, then log in.");
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError(error.message);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (error.message.toLowerCase().includes("email not confirmed")) {
+          setError("Please verify your email before logging in. Check your inbox for a confirmation link.");
+        } else {
+          setError(error.message);
+        }
+      } else if (data.user && !data.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+        setError("Your email is not verified yet. Please check your inbox and click the confirmation link.");
+      }
     }
 
     setLoading(false);

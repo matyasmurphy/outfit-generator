@@ -5,9 +5,16 @@ import { useState, useEffect } from "react";
 import Auth from "./Auth";
 import type { User } from "@supabase/supabase-js";
 
+function getStoragePath(publicUrl: string): string {
+  const marker = "/object/public/wardrobe/";
+  const idx = publicUrl.indexOf(marker);
+  return idx !== -1 ? decodeURIComponent(publicUrl.slice(idx + marker.length)) : publicUrl;
+}
+
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [removing, setRemoving] = useState<string | null>(null);
 
   const [wardrobe, setWardrobe] = useState<{ [key: string]: string[] }>({
     tops: [],
@@ -21,7 +28,6 @@ export default function Home() {
     shoes: "",
   });
 
-  // Listen for auth state changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -30,7 +36,6 @@ export default function Home() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      // Reset wardrobe when user changes
       if (!session?.user) {
         setWardrobe({ tops: [], bottoms: [], shoes: [] });
         setSelectedOutfit({ top: "", bottom: "", shoes: "" });
@@ -40,7 +45,6 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load wardrobe for the logged-in user
   useEffect(() => {
     if (!user) return;
 
@@ -92,6 +96,55 @@ export default function Home() {
         [category]: [...prev[category], publicUrl],
       }));
     }
+
+    // Reset the input so the same file can be re-uploaded if needed
+    e.target.value = "";
+  }
+
+  async function handleRemove(category: string, imageUrl: string) {
+    if (!user) return;
+    setRemoving(imageUrl);
+
+    const storagePath = getStoragePath(imageUrl);
+
+    // 1. Delete from Storage
+    const { error: storageError } = await supabase.storage
+      .from("wardrobe")
+      .remove([storagePath]);
+
+    if (storageError) {
+      console.error("Storage delete error:", storageError);
+      setRemoving(null);
+      return;
+    }
+
+    // 2. Delete from DB
+    const { error: dbError } = await supabase
+      .from("wardrobe_items")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("image_url", imageUrl);
+
+    if (dbError) {
+      console.error("DB delete error:", dbError);
+      setRemoving(null);
+      return;
+    }
+
+    // 3. Update local wardrobe state
+    setWardrobe((prev) => ({
+      ...prev,
+      [category]: prev[category].filter((url) => url !== imageUrl),
+    }));
+
+    // 4. Clear from outfit display if it was selected
+    setSelectedOutfit((prev) => ({
+      top: prev.top === imageUrl ? "" : prev.top,
+      bottom: prev.bottom === imageUrl ? "" : prev.bottom,
+      shoes: prev.shoes === imageUrl ? "" : prev.shoes,
+    }));
+
+    setRemoving(null);
   }
 
   const generateOutfit = () => {
@@ -110,7 +163,6 @@ export default function Home() {
     await supabase.auth.signOut();
   };
 
-  // Show nothing while checking session
   if (authLoading) {
     return (
       <div className="auth-wrapper">
@@ -121,13 +173,14 @@ export default function Home() {
     );
   }
 
-  // Show auth screen if not logged in
   if (!user) {
     return <Auth />;
   }
 
   const hasEnoughClothes =
     wardrobe.tops.length > 0 && wardrobe.bottoms.length > 0 && wardrobe.shoes.length > 0;
+
+  const totalItems = wardrobe.tops.length + wardrobe.bottoms.length + wardrobe.shoes.length;
 
   return (
     <div>
@@ -177,20 +230,40 @@ export default function Home() {
           </div>
 
           <div className="clothesPreview">
-            <h3>Wardrobe ({wardrobe.tops.length + wardrobe.bottoms.length + wardrobe.shoes.length} items)</h3>
-            {["tops", "bottoms", "shoes"].map((category) => (
+            <h3>Wardrobe ({totalItems} item{totalItems !== 1 ? "s" : ""})</h3>
+
+            {["tops", "bottoms", "shoes"].map((category) =>
               wardrobe[category].length > 0 && (
                 <div key={category} className="category-section">
-                  <p className="category-label">{category}</p>
+                  <p className="category-label">
+                    {category.charAt(0).toUpperCase() + category.slice(1)} ({wardrobe[category].length})
+                  </p>
                   <div className="category-images">
                     {wardrobe[category].map((url) => (
-                      <img key={url} src={url} width="80" height="80" style={{ objectFit: "cover", borderRadius: "8px" }} />
+                      <div key={url} className="wardrobe-item">
+                        <img
+                          src={url}
+                          alt={category}
+                          width="80"
+                          height="80"
+                          style={{ objectFit: "cover", borderRadius: "8px", display: "block" }}
+                        />
+                        <button
+                          className="remove-btn"
+                          onClick={() => handleRemove(category, url)}
+                          disabled={removing === url}
+                          title="Remove item"
+                        >
+                          {removing === url ? "…" : "×"}
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
               )
-            ))}
-            {wardrobe.tops.length === 0 && wardrobe.bottoms.length === 0 && wardrobe.shoes.length === 0 && (
+            )}
+
+            {totalItems === 0 && (
               <p className="empty-wardrobe">Upload some clothes to get started!</p>
             )}
           </div>

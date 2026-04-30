@@ -16,10 +16,10 @@ export default function Auth() {
     setError(null);
     setMessage(null);
 
-  if (mode === "register") {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) setError(error.message);
-    else setMessage("Account created! Check your email to confirm, then log in.");
+    if (mode === "register") {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) setError(error.message);
+      else setMessage("Account created! Check your email to confirm, then log in.");
     } else {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {

@@ -20,21 +20,17 @@ export default function OutfitDisplay({
   return (
     <div id="OutfitDisplay">
       <div id="clothesDisplay">
-        {selectedOutfit.top ? (
-          <img src={selectedOutfit.top} alt="top" />
-        ) : (
-          <div className="placeholder">👕</div>
-        )}
-        {selectedOutfit.bottom ? (
-          <img src={selectedOutfit.bottom} alt="bottom" />
-        ) : (
-          <div className="placeholder">👖</div>
-        )}
-        {selectedOutfit.shoes ? (
-          <img src={selectedOutfit.shoes} alt="shoes" />
-        ) : (
-          <div className="placeholder">👟</div>
-        )}
+        {selectedOutfit.top
+          ? <img src={selectedOutfit.top} alt="Top" className="outfit-img outfit-top" />
+          : <div className="placeholder placeholder-top">👕</div>}
+
+        {selectedOutfit.bottom
+          ? <img src={selectedOutfit.bottom} alt="Bottom" className="outfit-img outfit-bottom" />
+          : <div className="placeholder placeholder-bottom">👖</div>}
+
+        {selectedOutfit.shoes
+          ? <img src={selectedOutfit.shoes} alt="Shoes" className="outfit-img outfit-shoes" />
+          : <div className="placeholder placeholder-shoes">👟</div>}
       </div>
 
       <button onClick={onGenerate} disabled={!hasEnoughClothes}>
